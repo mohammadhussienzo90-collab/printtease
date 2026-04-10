@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }} - PrintTease{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Order #{{ order.id }}</h1>
+        <p>Thank you for your purchase!</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="alert alert-success text-center mb-5" style="border-radius: 50px; border: none; background: linear-gradient(135deg, #E8F5E9, #C8E6C9);">
+        <i class="fas fa-check-circle me-2" style="color: #2E7D32;"></i>
+        <strong>Order Placed Successfully!</strong> Your order has been received and is being processed.
+    </div>
+
+    <div class="row g-5">
+        <!-- Order Details -->
+        <div class="col-lg-8">
+            <div class="card-custom mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-receipt me-2"></i>Order #{{ order.id }}</span>
+                        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="row g-4 text-center">
+                        <div class="col-md-6">
+                            <h5 style="color: var(--pink-deep);">
+                                <i class="fas fa-calendar me-2"></i>Order Date
+                            </h5>
+                            <p>{{ order.created_at|date:"F d, Y \a\t h:i A" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 style="color: var(--pink-deep);">
+                                <i class="fas fa-clock me-2"></i>Last Updated
+                            </h5>
+                            <p>{{ order.updated_at|date:"F d, Y \a\t h:i A" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card-custom">
+                <div class="card-header">
+                    <i class="fas fa-box-open me-2"></i>Order Items
+                </div>
+                <div class="p-0">
+                    <table class="table-custom table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 10px;">
+                                        {% else %}
+                                        <div class="d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--pink-pale); border-radius: 10px;">
+                                            <i class="fas fa-cube" style="color: var(--pink-bright);"></i>
+                                        </div>
+                                        {% endif %}
+                                        <span style="color: var(--pink-deep); font-weight: 500;">{{ item.product.name }}</span>
+                                    </div>
+                                </td>
+                                <td>${{ item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td><span style="color: var(--pink-bright); font-weight: 600;">${{ item.total_price }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="cart-summary mb-4">
+                <h4><i class="fas fa-cash-stack me-2"></i>Order Total</h4>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>${{ order.total }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>FREE</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>${{ order.total }}</span>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="card-custom p-4 mb-4">
+                <h5 class="text-center mb-3" style="color: var(--pink-deep);">
+                    <i class="fas fa-truck me-2"></i>Shipping Address
+                </h5>
+                <div class="text-center">
+                    <p class="mb-1"><strong>{{ order.first_name }} {{ order.last_name }}</strong></p>
+                    <p class="mb-1">{{ order.address }}</p>
+                    <p class="mb-1">{{ order.city }}, {{ order.state }} {{ order.zip_code }}</p>
+                    <p class="mb-0">{{ order.country }}</p>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="card-custom p-4 mb-4">
+                <h5 class="text-center mb-3" style="color: var(--pink-deep);">
+                    <i class="fas fa-phone me-2"></i>Contact Information
+                </h5>
+                <div class="text-center">
+                    <p class="mb-1"><i class="fas fa-envelope me-2" style="color: var(--pink-bright);"></i>{{ order.email }}</p>
+                    <p class="mb-0"><i class="fas fa-phone me-2" style="color: var(--pink-bright);"></i>{{ order.phone }}</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="{% url 'orders:order_history' %}" class="btn btn-outline-pink">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - PrintTease{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>{{ product.name }}</h1>
+        <p>Premium 3D Printed Collectible</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-5">
+        <!-- Product Image -->
+        <div class="col-lg-6">
+            <div class="card-custom p-3" style="background: linear-gradient(135deg, var(--pink-pale), var(--pink-light));">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded-3" alt="{{ product.name }}" style="width: 100%; height: 450px; object-fit: cover;">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center rounded-3" style="height: 450px; background: linear-gradient(135deg, var(--pink-deep), var(--pink-bright));">
+                    <div class="text-center">
+                        <i class="fas fa-cube" style="font-size: 8rem; color: var(--white);"></i>
+                        <p class="mt-3" style="color: var(--white); font-size: 1.2rem;">Premium 3D Collectible</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-6">
+            <div class="text-center">
+                <span class="badge mb-3" style="background: var(--gold); color: var(--grey-dark); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">
+                    <i class="fas fa-tag me-1"></i>{{ product.category.name }}
+                </span>
+
+                <h1 class="mb-3" style="color: var(--pink-deep);">{{ product.name }}</h1>
+
+                <div class="d-flex align-items-center justify-content-center mb-4 flex-wrap gap-3">
+                    <span class="price" style="font-size: 2.5rem;">${{ product.price }}</span>
+                    {% if product.stock > 0 %}
+                    <span class="stock-badge stock-in">
+                        <i class="fas fa-check-circle me-1"></i>In Stock
+                    </span>
+                    {% else %}
+                    <span class="stock-badge stock-out">
+                        <i class="fas fa-times-circle me-1"></i>Out of Stock
+                    </span>
+                    {% endif %}
+                </div>
+
+                <p class="mb-4" style="color: var(--grey-dark); line-height: 1.8; font-size: 1.1rem;">{{ product.description }}</p>
+
+                <!-- Features -->
+                <div class="card-custom p-4 mb-4" style="background: var(--pink-pale);">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="fas fa-shipping-fast" style="font-size: 1.8rem; color: var(--pink-bright);"></i>
+                            <p class="mb-0 mt-2" style="font-size: 0.8rem; color: var(--grey-medium);">Free Shipping</p>
+                            <strong style="color: var(--pink-deep);">$50+</strong>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-shield-alt" style="font-size: 1.8rem; color: var(--gold);"></i>
+                            <p class="mb-0 mt-2" style="font-size: 0.8rem; color: var(--grey-medium);">Quality</p>
+                            <strong style="color: var(--pink-deep);">100%</strong>
+                        </div>
+                        <div class="col-4">
+                            <i class="fas fa-undo" style="font-size: 1.8rem; color: var(--pink-deep);"></i>
+                            <p class="mb-0 mt-2" style="font-size: 0.8rem; color: var(--grey-medium);">Returns</p>
+                            <strong style="color: var(--pink-deep);">30 Days</strong>
+                        </div>
+                    </div>
+                </div>
+
+                {% if product.available and product.stock > 0 %}
+                <form action="{% url 'carts:add_to_cart' product.id %}" method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-center">
+                        <div class="quantity-input">
+                            <label class="form-label-custom me-2 mb-0">Qty:</label>
+                            <button type="button" class="quantity-btn" onclick="updateQuantity(-1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" name="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock }}" style="width: 60px; border-radius: 12px; border: 2px solid var(--pink-deep);">
+                            <button type="button" class="quantity-btn" onclick="updateQuantity(1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-pink flex-grow-1" style="max-width: 250px;">
+                            <i class="fas fa-cart-plus me-2"></i>
+                            {% if in_cart %}Update Cart{% else %}Add to Cart{% endif %}
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-danger text-center" style="border-radius: 20px;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    This product is currently out of stock.
+                </div>
+                {% endif %}
+
+                {% if in_cart %}
+                <div class="alert alert-success text-center" style="border-radius: 20px;">
+                    <i class="fas fa-check-circle me-2"></i>
+                    This item is already in your cart!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateQuantity(change) {
+    const input = document.getElementById('quantity');
+    const newValue = parseInt(input.value) + change;
+    const max = parseInt(input.max);
+    if (newValue >= 1 && newValue <= max) {
+        input.value = newValue;
+    }
+}
+</script>
+{% endblock %}

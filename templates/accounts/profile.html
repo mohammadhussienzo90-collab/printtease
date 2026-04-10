@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - PrintTease{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-user-circle me-3"></i>My Profile</h1>
+        <p>Manage your account and shipping information</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-5">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-3">
+            <div class="card-custom p-4 text-center">
+                <div class="mb-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--pink-deep), var(--pink-bright));">
+                        <i class="fas fa-user" style="font-size: 3rem; color: white;"></i>
+                    </div>
+                </div>
+                <h4 style="color: var(--pink-deep);">{{ user.username }}</h4>
+                <p style="color: var(--grey-medium);">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="col-lg-9">
+            <div class="card-custom">
+                <div class="card-header">
+                    <i class="fas fa-pencil-alt me-2"></i>Edit Profile
+                </div>
+                <div class="p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <h5 class="mb-4 text-center" style="color: var(--pink-deep);">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Username</label>
+                                <input type="text" class="form-control form-control-custom" value="{{ user.username }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Email Address</label>
+                                <input type="email" class="form-control form-control-custom" value="{{ user.email }}" disabled>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-4 mt-5 text-center" style="color: var(--pink-deep);">
+                            <i class="fas fa-map-marker-alt me-2"></i>Shipping Address
+                        </h5>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="phone" class="form-label-custom">
+                                    <i class="fas fa-phone me-2"></i>Phone Number
+                                </label>
+                                <input type="text" name="phone" id="phone" class="form-control form-control-custom" value="{{ profile.phone|default:'' }}" placeholder="Enter your phone number">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="address" class="form-label-custom">
+                                    <i class="fas fa-home me-2"></i>Address
+                                </label>
+                                <textarea name="address" id="address" class="form-control form-control-custom" rows="3" placeholder="Enter your street address">{{ profile.address|default:'' }}</textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="city" class="form-label-custom">
+                                    <i class="fas fa-building me-2"></i>City
+                                </label>
+                                <input type="text" name="city" id="city" class="form-control form-control-custom" value="{{ profile.city|default:'' }}" placeholder="City">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="state" class="form-label-custom">
+                                    <i class="fas fa-map me-2"></i>State / Province
+                                </label>
+                                <input type="text" name="state" id="state" class="form-control form-control-custom" value="{{ profile.state|default:'' }}" placeholder="State">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="zip_code" class="form-label-custom">
+                                    <i class="fas fa-mailbox me-2"></i>ZIP / Postal Code
+                                </label>
+                                <input type="text" name="zip_code" id="zip_code" class="form-control form-control-custom" value="{{ profile.zip_code|default:'' }}" placeholder="ZIP Code">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="country" class="form-label-custom">
+                                    <i class="fas fa-globe me-2"></i>Country
+                                </label>
+                                <input type="text" name="country" id="country" class="form-control form-control-custom" value="{{ profile.country|default:'USA' }}" placeholder="Country">
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-5 pt-4" style="border-top: 1px solid var(--grey-light);">
+                            <button type="submit" class="btn btn-pink">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

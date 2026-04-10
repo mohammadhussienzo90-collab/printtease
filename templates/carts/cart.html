@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - PrintTease{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-shopping-cart me-3"></i>Shopping Cart</h1>
+        <p>Review your items before checkout</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    {% if cart_items %}
+    <div class="row g-5">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <div class="card-custom">
+                <div class="p-4">
+                    {% for item in cart_items %}
+                    <div class="cart-item d-flex flex-column flex-md-row align-items-center gap-4 py-4 border-bottom text-center" style="border-color: var(--grey-light) !important;">
+                        <!-- Product Image -->
+                        <div style="width: 120px; flex-shrink: 0;">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="img-fluid rounded-3" alt="{{ item.product.name }}" style="width: 100px; height: 100px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: var(--pink-pale);">
+                                <i class="fas fa-cube" style="font-size: 2rem; color: var(--pink-bright);"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="flex-grow-1 text-center">
+                            <h5 class="mb-1" style="color: var(--pink-deep);">{{ item.product.name }}</h5>
+                            <p class="mb-2" style="color: var(--grey-medium); font-size: 0.9rem;">${{ item.product.price }} each</p>
+                            {% if item.product.stock > 0 %}
+                            <span class="stock-badge stock-in" style="font-size: 0.75rem;">
+                                <i class="fas fa-check-circle me-1"></i>In Stock
+                            </span>
+                            {% else %}
+                            <span class="stock-badge stock-out" style="font-size: 0.75rem;">
+                                <i class="fas fa-times-circle me-1"></i>Out of Stock
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Quantity & Actions -->
+                        <div class="d-flex flex-column align-items-center gap-2">
+                            {% if request.user.is_authenticated %}
+                            <form action="{% url 'carts:update_cart' item.product.id %}" method="post" class="d-flex align-items-center gap-2">
+                                {% csrf_token %}
+                                <div class="quantity-input">
+                                    <button type="button" class="quantity-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" onclick="this.nextElementSibling.value = Math.max(1, parseInt(this.nextElementSibling.value) - 1); this.form.requestSubmit();">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control text-center" style="width: 50px; border-radius: 10px; border: 2px solid var(--pink-deep); padding: 0.4rem;">
+                                    <button type="button" class="quantity-btn" style="width: 32px; height: 32px; font-size: 0.8rem;" onclick="this.previousElementSibling.value = Math.min({{ item.product.stock }}, parseInt(this.previousElementSibling.value) + 1); this.form.requestSubmit();">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </form>
+                            {% else %}
+                            <span style="color: var(--grey-medium);">Qty: {{ item.quantity }}</span>
+                            {% endif %}
+
+                            <a href="{% url 'carts:remove_from_cart' item.product.id %}" class="btn btn-sm" style="color: var(--white); background: var(--pink-deep); border-radius: 20px; padding: 0.4rem 1rem;">
+                                <i class="fas fa-trash me-1"></i>Remove
+                            </a>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="text-center" style="min-width: 100px;">
+                            <span class="price" style="font-size: 1.25rem;">${{ item.total_price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Continue Shopping -->
+                <div class="p-4 text-center" style="background: var(--pink-pale); border-radius: 0 0 20px 20px;">
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline-pink">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="cart-summary">
+                <h4><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+
+                <div class="summary-row">
+                    <span>Subtotal ({{ cart_items|length }} items)</span>
+                    <span>${{ total }}</span>
+                </div>
+
+                <div class="summary-row">
+                    <span><i class="fas fa-truck me-1"></i>Shipping</span>
+                    <span>FREE</span>
+                </div>
+
+                <div class="summary-row">
+                    <span><i class="fas fa-shield-alt me-1"></i>Tax</span>
+                    <span>Included</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>${{ total }}</span>
+                </div>
+
+                <div class="mt-4 text-center">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-white w-100 py-3">
+                        <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}?next={% url 'carts:cart' %}" class="btn btn-white w-100 py-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Checkout
+                    </a>
+                    <p class="text-center mt-3" style="color: rgba(255,255,255,0.8); font-size: 0.875rem;">
+                        <i class="fas fa-info-circle me-1"></i>Please login to complete your purchase
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-shopping-basket"></i>
+        <h3>Your Cart is Empty</h3>
+        <p>Looks like you haven't added any items to your cart yet.</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{% url 'products:product_list' %}" class="btn btn-pink">
+                <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+            </a>
+            {% if not request.user.is_authenticated %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-pink">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

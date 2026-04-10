@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - PrintTease{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-credit-card me-3"></i>Checkout</h1>
+        <p>Complete your order securely</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row g-5">
+            <!-- Billing Form -->
+            <div class="col-lg-8">
+                <div class="card-custom mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-user me-2"></i>Billing Information
+                    </div>
+                    <div class="p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label-custom">
+                                    <i class="fas fa-user me-2"></i>First Name
+                                </label>
+                                <input type="text" name="first_name" id="first_name" class="form-control form-control-custom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label-custom">
+                                    <i class="fas fa-user me-2"></i>Last Name
+                                </label>
+                                <input type="text" name="last_name" id="last_name" class="form-control form-control-custom" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label-custom">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <input type="email" name="email" id="email" class="form-control form-control-custom" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label-custom">
+                                    <i class="fas fa-phone me-2"></i>Phone Number
+                                </label>
+                                <input type="tel" name="phone" id="phone" class="form-control form-control-custom" value="{{ profile.phone|default:'' }}" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="address" class="form-label-custom">
+                                    <i class="fas fa-home me-2"></i>Street Address
+                                </label>
+                                <textarea name="address" id="address" class="form-control form-control-custom" rows="2" required>{{ profile.address|default:'' }}</textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="city" class="form-label-custom">
+                                    <i class="fas fa-building me-2"></i>City
+                                </label>
+                                <input type="text" name="city" id="city" class="form-control form-control-custom" value="{{ profile.city|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label-custom">
+                                    <i class="fas fa-map me-2"></i>State / Province
+                                </label>
+                                <input type="text" name="state" id="state" class="form-control form-control-custom" value="{{ profile.state|default:'' }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="zip_code" class="form-label-custom">
+                                    <i class="fas fa-mailbox me-2"></i>ZIP / Postal Code
+                                </label>
+                                <input type="text" name="zip_code" id="zip_code" class="form-control form-control-custom" value="{{ profile.zip_code|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="country" class="form-label-custom">
+                                    <i class="fas fa-globe me-2"></i>Country
+                                </label>
+                                <input type="text" name="country" id="country" class="form-control form-control-custom" value="{{ profile.country|default:'USA' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4><i class="fas fa-receipt me-2"></i>Order Summary</h4>
+
+                    <div class="mb-4" style="max-height: 200px; overflow-y: auto;">
+                        {% for item in cart_items %}
+                        <div class="d-flex gap-3 py-2 border-bottom text-center" style="border-color: rgba(255,255,255,0.2) !important;">
+                            <span style="color: var(--white);">{{ item.product.name }}</span>
+                            <span class="ms-auto" style="color: var(--gold);">${{ item.total_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>${{ total }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span><i class="fas fa-truck me-1"></i>Shipping</span>
+                        <span>FREE</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>${{ total }}</span>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-white w-100 py-3">
+                            <i class="fas fa-check-circle me-2"></i>Place Order
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <a href="{% url 'carts:cart' %}" class="btn btn-outline-pink">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
