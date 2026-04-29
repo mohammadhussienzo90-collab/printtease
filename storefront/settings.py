@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-p)5u=6ote(f6e2i*%f*19
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['printtease.art', 'www.printtease.art', 'railway.app', 'localhost', '127.0.0.1', '.railway.app']
+ALLOWED_HOSTS = ['printtease.art', 'www.printtease.art', 'railway.app', 'localhost', '127.0.0.1', '.railway.app', 'printtease-production.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,6 +124,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 # Security Settings (for production)
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
