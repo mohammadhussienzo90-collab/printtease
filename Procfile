@@ -1,1 +1,1 @@
-web: gunicorn storefront.wsgi --workers 2 --bind 0.0.0.0:$PORT
+web: python manage.py setup_production && gunicorn storefront.wsgi --workers 2 --bind 0.0.0.0:$PORT
